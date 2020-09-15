@@ -10,7 +10,7 @@
     width:100%;
     height:100%;
     display:none;
-    z-index:9999; 
+    
 }
 
 
@@ -23,18 +23,14 @@
 .scoreBoard {
 font-size: 40px;
 font-family: SilkScreen;
+	
 }
-
-.center {
-  margin: auto;
-  width: 50%;
-}
-
 img {
 	opacity: 0.6;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
+	width:400px;
 }
 img:hover {
   opacity: 1.0;
@@ -44,21 +40,36 @@ img:hover {
 opacity: 1;
 }
 
+.gotocenter {
+
+	padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 800px;
+
+
+
+
 
 
 </style>
+
 <div id="dimmer">
 <div id="menu">
-<img style="width:25%;" class="name" src="Images/Snake.png" alt="Snake" >
-<img style="width:25%;" onclick="menuNew();" src="Images/New.png" alt="New Game" >
-<img style="width:25%;" onclick="menuResume();" src="Images/Resume.png" alt="Resume Game" >
+<img style="width:400px;" class="name" src="Images/Snake.png" alt="Snake" >
+<img style="width:400px;" onclick="menuNew();" src="Images/New.png" alt="New Game" >
+<img style="width:400px;" onclick="menuResume();" src="Images/Resume.png" alt="Resume Game" >
 </div>
+
  </div>
-<div class="center">
+ <div class="gotocenter">
 <p class="scoreBoard" id="scoreboard"></p>
 <canvas id="myCanvas" width="800" height="600" style="border:1px solid #000000;">
 </canvas>
 </div>
+
 
 <script>
 const context = document.getElementById("myCanvas").getContext('2d');
@@ -77,7 +88,7 @@ var score = 0;
 var directionOfSnake = 3;
 var NowMoving = 3;
 var timeCounter = 200;
-var PauseFlag = 0;
+var PauseFlag = 1;
 var SnakeSpeed = 200;
 var MaxSnakeSpeed = 100;
 var MoveTime = 0;
@@ -85,6 +96,13 @@ var CheckTime = 0;
 
 var showMustGoOn = setInterval(move, SnakeSpeed);
 document.addEventListener("keydown", check,false);
+
+
+
+
+
+
+
 
 
 
@@ -127,8 +145,6 @@ function check(key){
 		}
 		if (key.keyCode =="82"){
 		if(PauseFlag == 1){
-			dim(true);
-			PauseFlag = 0;
 			menuNew();
 		}
 		else{
