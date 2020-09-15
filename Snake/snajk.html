@@ -1,0 +1,334 @@
+<html>
+<style>
+#dimmer
+{
+    background:#555;
+    opacity:0.9;
+    position:fixed; 
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display:none;
+    z-index:9999; 
+}
+
+
+
+@font-face {
+   font-family: SilkScreen;
+   src: url(Font/slkscr.ttf);
+}
+
+.scoreBoard {
+font-size: 40px;
+font-family: SilkScreen;
+}
+
+.center {
+  margin: auto;
+  width: 50%;
+}
+
+img {
+	opacity: 0.6;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+img:hover {
+  opacity: 1.0;
+}
+
+.name{
+opacity: 1;
+}
+
+
+
+</style>
+<div id="dimmer">
+<div id="menu">
+<img style="width:25%;" class="name" src="Images/Snake.png" alt="Snake" >
+<img style="width:25%;" onclick="menuNew();" src="Images/New.png" alt="New Game" >
+<img style="width:25%;" onclick="menuResume();" src="Images/Resume.png" alt="Resume Game" >
+</div>
+ </div>
+<div class="center">
+<p class="scoreBoard" id="scoreboard"></p>
+<canvas id="myCanvas" width="800" height="600" style="border:1px solid #000000;">
+</canvas>
+</div>
+
+<script>
+const context = document.getElementById("myCanvas").getContext('2d');
+
+var x = -20;
+var y = 20;
+var x2 = 0;
+var y2 = 0;
+var size = 20;
+var width = 800;
+var height = 600;
+var snake = [];
+var apple;
+var dlugosc;
+var score = 0;
+var directionOfSnake = 3;
+var NowMoving = 3;
+var timeCounter = 200;
+var PauseFlag = 0;
+var SnakeSpeed = 200;
+var MaxSnakeSpeed = 100;
+var MoveTime = 0;
+var CheckTime = 0;
+
+var showMustGoOn = setInterval(move, SnakeSpeed);
+document.addEventListener("keydown", check,false);
+
+
+
+function dim(valueOfDim){
+if(valueOfDim == true){
+clearInterval(showMustGoOn);
+}
+else{
+showMustGoOn = setInterval(move, SnakeSpeed);
+}
+
+    document.getElementById('dimmer').style.display=(valueOfDim?'block':'none');
+	
+} 
+
+
+
+function check(key){
+		if (key.keyCode =="37"){
+			left();
+		}
+		if (key.keyCode =="38"){
+			up();
+		}
+		if (key.keyCode =="39"){
+			right();
+		}
+		if (key.keyCode =="40"){
+			down();
+		}
+		if (key.keyCode =="27"){
+		if(PauseFlag == 0){
+			dim(true);
+			PauseFlag = 1;
+		}
+		else{
+			dim(false);
+			PauseFlag = 0;
+		}
+		}
+		if (key.keyCode =="82"){
+			startGame();
+		}
+}
+
+function menuNew(){
+dim(false);
+PauseFlag = 0;
+startGame();
+
+}
+
+function menuResume(){
+dim(false);
+PauseFlag = 0;
+
+}
+
+function move(){
+
+	switch (directionOfSnake) {
+		case 0:
+			y = y - size;
+			drawSnake();
+			break;
+		case 1:
+			x = x - size;
+			drawSnake();
+			break;
+		case 2:
+			y = y + size;
+			drawSnake();
+			break;
+		case 3:
+			x = x + size;
+			drawSnake();
+			break;
+	}
+	NowMoving = directionOfSnake;
+}
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+startGame();
+function startGame(){
+	context.clearRect(0, 0, width, height);
+	score = 0;
+	directionOfSnake = 3;
+	document.getElementById("scoreboard").innerHTML = score;
+	
+	x = -20;
+	y = 20;
+	x2 = 0;
+	y2 = 0;
+	snake = [];
+	apple = null;
+	generateApple();
+	dlugosc = 0;
+	clearInterval(showMustGoOn);
+	SnakeSpeed = 200;
+	showMustGoOn = setInterval(move, SnakeSpeed);
+
+		for (var i = 0; i < 8; i++) {
+			x = x + size;
+				ctx.beginPath();
+				ctx.strokeStyle = "Black";
+				ctx.fillStyle = "Green";
+				ctx.fillRect(x, y, size, size);
+				ctx.rect(x, y, size, size);
+				ctx.stroke();
+				var koordy = x + "," + y;
+				snake.push(koordy);
+				dlugosc = snake.length;
+		}
+}
+
+
+
+function generateApple(){	
+			x2 = Math.floor(Math.random() * 30 )*20 ;
+			y2 = Math.floor(Math.random() * 30 )*20 ;	
+			drawApple();
+			var koordy1 = x2 + "," + y2;
+			apple = koordy1 ;
+}
+
+function drawApple(){
+		ctx.beginPath();
+		ctx.strokeStyle = "Black";
+		ctx.fillStyle = "Red";
+		ctx.fillRect(x2, y2, size, size);
+		ctx.rect(x2, y2, size, size);
+		ctx.stroke();
+}
+
+function drawSnake(){
+context.clearRect(0, 0, width, height);
+	if(apple != null){
+	drawApple();
+	}
+	else{
+	}
+		for (var i = 0; i < dlugosc; i++) {
+			if( i == 0){
+				var koordy = x + "," + y;
+				var anySnake = snake.includes(koordy);
+				
+						if (koordy === apple){
+						apple = null;
+						generateApple();
+								ctx.strokeStyle = "Black";
+								ctx.fillStyle = "Green";
+								ctx.beginPath();
+								ctx.fillRect(x, y, size, size);
+								ctx.rect(x, y, size, size);
+								ctx.stroke();
+								snake.splice(0, 0, koordy); 
+								score = score + 2;
+								
+								if(SnakeSpeed > MaxSnakeSpeed){
+								clearInterval(showMustGoOn);
+								SnakeSpeed = SnakeSpeed - 10;
+								showMustGoOn = setInterval(move, SnakeSpeed);
+								}
+								else{
+								}
+								
+								
+								console.log(showMustGoOn);
+								document.getElementById("scoreboard").innerHTML = score;
+						}
+						else if(anySnake == true){
+						startGame();
+						break;
+						}
+						else{
+								if(x > (width-size) || y > (height-size) || x < 0 || y < 0){
+								startGame();
+								break;
+								}
+								else{
+								ctx.strokeStyle = "Black";
+								ctx.fillStyle = "Green";
+								ctx.beginPath();
+								ctx.fillRect(x, y, size, size);
+								ctx.rect(x, y, size, size);
+								ctx.stroke();
+								snake.splice(0, 1, koordy); 
+								}
+						}
+				}
+			else{
+					ctx.strokeStyle = "Black";
+					ctx.fillStyle = "Green";
+					var par = snake.pop();
+							var spt1 = par.split(',');
+							var x1 = parseInt(spt1[0],10);	
+							var y1 = parseInt(spt1[1],10);		
+					ctx.beginPath();
+					ctx.fillRect(x1, y1, size, size);
+					ctx.rect(x1, y1, size, size);
+					ctx.stroke();
+					var koordy = x1 + "," + y1;
+					snake.splice(0, 0, koordy); 
+					dlugosc = snake.length;
+			}	
+		}
+}
+
+
+function up() {
+	if (NowMoving != 2){
+	directionOfSnake = 0;
+	}
+	else {
+	}
+}
+
+function left() {
+CheckTime = MoveTime;
+	if (NowMoving != 3){
+	directionOfSnake = 1;
+	console.log("ile to wynosi" + MoveTime);
+	}
+	else{
+	}
+}
+
+function down() {
+	if (NowMoving != 0){
+	directionOfSnake = 2;
+	}
+	else{
+	}
+}
+
+function right() {
+	if (NowMoving != 1){
+	directionOfSnake = 3;
+	}
+	else{
+	}
+}
+
+</script>
+</html>
